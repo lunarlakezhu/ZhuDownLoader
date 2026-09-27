@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "zhu-cf-assist": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "${ZCODE_PLUGIN_ROOT}/mcp/cf-assist-server.mjs"
+      ],
+      "env": {
+        "ZHU_DOWNLOADER_HOME": "D:\\ZhuDownLoader",
+        "ZHU_CF_ASSIST_DIR": "D:\\ZhuDownLoader\\.cf-assist"
+      },
+      "enabled": true,
+      "timeoutMs": 60000
+    }
+  }
+}

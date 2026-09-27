@@ -1,0 +1,7 @@
+# OS 杂物
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Mimosa 扫描会话状态（工具自建，非源码）
+/.mimosa/

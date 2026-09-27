@@ -1,0 +1,19 @@
+{
+  "name": "dev-zhudownloader-plugins",
+  "plugins": [
+    {
+      "name": "zhu-cf-assist-zcode",
+      "source": "./zhu-cf-assist-zcode",
+      "version": "0.2.0",
+      "description": "AI recognizes Cloudflare Turnstile checkbox coordinates on journal pages and bridges ZhuDownLoader to download paper PDFs.",
+      "displayName": "Zhu CF Assist (ZCode)",
+      "displayName_i18n": {
+        "zh-CN": "Zhu 下载验证框辅助"
+      },
+      "description_i18n": {
+        "zh-CN": "AI 识别期刊网页 Cloudflare 验证框坐标，桥接 ZhuDownLoader 下载论文 PDF。"
+      },
+      "category": "productivity"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+# 白名单式忽略：本仓库只收分发内容，防止开发文件被误提交
+/*
+!/.gitattributes
+!/.gitignore
+!/README.md
+!/sample.txt
+!/开始这里-先读我.txt
+!/新电脑三步上手.txt
+!/Mac上手指南.txt
+!/wiki/
+!/plugins/
