@@ -1,6 +1,10 @@
 Mac 版上手指南（给第一次在 Mac 上用 ZhuDownLoader 的你）
 
-把项目文件夹整个拷到 Mac 上（U 盘、微信文件传输助手、AirDrop 都行），
+先把「项目文件夹」弄到 Mac 上，二选一：
+· 从 GitHub 仓库的 Releases 页面下载 ZhuDownLoader-win-v0.2.1.zip
+  （文件名带 win，但 Mac 同样能用，Mac 全套 .command 脚本都在里面），
+  双击解压即可——解压出来的 ZhuDownLoader 文件夹就是项目文件夹；
+· 或者从别人手里整个拷项目文件夹过来（U 盘、微信文件传输助手、AirDrop 都行）。
 然后按下面四步走，全程约 10 分钟。
 
 ────────────────────────────────
