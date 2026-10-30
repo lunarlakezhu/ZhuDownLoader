@@ -1,4 +1,5 @@
-# 白名单式忽略：本仓库只收分发内容，防止开发文件被误提交
+# 白名单式忽略：本仓库只收 CLI 源码 + 分发内容，防止开发文件被误提交
+# （node_modules、.browser-profile、登录态、测试产物等不在白名单内，天然进不来）
 /*
 !/.gitattributes
 !/.gitignore
@@ -9,3 +10,19 @@
 !/Mac上手指南.txt
 !/wiki/
 !/plugins/
+
+# CLI 源码（与发行包同口径：build_dist_zip.py 的 DEV_ITEMS + DEV_DIRS）
+!/lib/
+!/webui/
+!/batch_download.mjs
+!/pw_download.mjs
+!/zhu-dl.ps1
+!/zhu-dl.sh
+!/拖拽下载.bat
+!/拖拽下载.command
+!/网页版下载.bat
+!/网页版下载.command
+!/一键安装环境.bat
+!/一键安装环境.command
+!/package.json
+!/package-lock.json

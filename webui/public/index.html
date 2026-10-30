@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>朱下载器 · 批量文献 PDF 下载</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="masthead">
+  <div class="seal" aria-hidden="true">朱</div>
+  <div class="masthead-text">
+    <h1>朱下载器 <span class="latin">ZhuDownLoader</span></h1>
+    <p class="tagline">批量文献 PDF 下载 · 网页版 —— 粘贴 DOI 清单，点一下，等 PDF。</p>
+  </div>
+</header>
+
+<main>
+  <!-- ============ 表单视图 ============ -->
+  <section id="view-form" class="view">
+    <section class="step">
+      <div class="step-head"><span class="step-no">壹</span><h2>粘贴文献清单</h2></div>
+      <p class="hint">把论文的 DOI 列表粘贴到下面，每行一条即可。编号、网址、标题等多余文字会自动忽略，
+        也可以 <label class="linklike" for="file-input">从 .txt 文件导入</label>，或把文件直接拖进文本框。</p>
+      <div class="list-wrap" id="list-wrap">
+        <textarea id="list" rows="8" spellcheck="false"
+          placeholder="例如：&#10;1. 10.1038/s41467-024-48293-2 某篇 Nature 论文&#10;10.1109/LRA.2023.3322071&#10;https://doi.org/10.1073/pnas.2314359121"></textarea>
+        <input type="file" id="file-input" accept=".txt,.csv,.md,text/plain" hidden>
+      </div>
+      <div class="form-row">
+        <button type="button" id="btn-sample" class="btn ghost small">填入示例清单</button>
+        <button type="button" id="btn-clear" class="btn ghost small">清空</button>
+        <span id="preview-count" class="count-badge" hidden></span>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head"><span class="step-no">贰</span><h2>选择保存位置</h2></div>
+      <div class="field">
+        <label for="outdir">PDF 保存到这个文件夹</label>
+        <input type="text" id="outdir" spellcheck="false" placeholder="E:\Papers">
+        <p class="hint">文件夹不存在会自动创建；下载完成后可以一键打开。</p>
+      </div>
+      <details class="advanced">
+        <summary>更多选项（保持默认就好）</summary>
+        <div class="field-inline">
+          <label>同时下载
+            <select id="concurrency">
+              <option value="1">1 篇</option>
+              <option value="2" selected>2 篇</option>
+              <option value="3">3 篇</option>
+              <option value="4">4 篇</option>
+            </select>
+          </label>
+          <label>失败自动重试
+            <select id="retries">
+              <option value="0">不重试</option>
+              <option value="1" selected>1 次</option>
+              <option value="2">2 次</option>
+              <option value="3">3 次</option>
+            </select>
+          </label>
+        </div>
+        <p class="hint">部分出版商会打开下载器专用 Edge。若官网要求机构登录或人工验证，批次结束后点“在下载器 Edge 中登录或验证”，完成后点“验证完成后重试”。
+          电脑卡顿就把「同时下载」调回 1～2。</p>
+      </details>
+    </section>
+
+    <section class="step step-final">
+      <div class="step-head"><span class="step-no">叁</span><h2>开始下载</h2></div>
+      <div class="start-row">
+        <button type="button" id="btn-start" class="btn primary">开 始 下 载</button>
+        <span id="form-error" class="error-line" role="alert" hidden></span>
+      </div>
+    </section>
+  </section>
+
+  <!-- ============ 进度视图 ============ -->
+  <section id="view-run" class="view" hidden>
+    <div class="run-head">
+      <div class="counters">
+        <span class="chip chip-total">共 <b id="c-total">0</b> 篇</span>
+        <span class="chip st-ok">成功 <b id="c-ok">0</b></span>
+        <span class="chip st-fail">失败 <b id="c-failed">0</b></span>
+        <span class="chip st-manual">需人工 <b id="c-manual">0</b></span>
+        <span class="chip st-exists">已存在 <b id="c-exists">0</b></span>
+        <span class="chip st-run">进行中 <b id="c-running">0</b></span>
+        <span class="chip st-pending">待处理 <b id="c-wait">0</b></span>
+      </div>
+      <div class="progress-rail" aria-hidden="true"><div id="progress-fill"></div></div>
+      <div class="run-meta">
+        <span id="run-outdir" class="mono"></span>
+        <span id="run-state-line"></span>
+        <button type="button" id="btn-stop" class="btn danger small">停止接新任务</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table id="task-table">
+        <thead>
+          <tr><th class="col-idx">#</th><th>DOI</th><th>出版商</th><th>状态</th><th>耗时</th><th>说明</th></tr>
+        </thead>
+        <tbody id="task-body"></tbody>
+      </table>
+    </div>
+
+    <div id="summary-card" class="summary" hidden>
+      <div class="stamp" aria-hidden="true">办结</div>
+      <h2>这一批跑完啦</h2>
+      <p id="sum-detail"></p>
+      <ul id="sum-failed" class="sum-failed"></ul>
+      <div class="sum-actions">
+        <button type="button" id="btn-open-folder" class="btn primary">打开 PDF 文件夹</button>
+        <button type="button" id="btn-open-auth" class="btn ghost" hidden>在下载器 Edge 中登录或验证</button>
+        <button type="button" id="btn-retry-manual" class="btn ghost" hidden>验证完成后重试</button>
+        <button type="button" id="btn-copy-failed" class="btn ghost">复制失败清单</button>
+        <button type="button" id="btn-retry-failed" class="btn ghost">把失败的填回输入框重试</button>
+        <button type="button" id="btn-new-batch" class="btn ghost">再来一批</button>
+      </div>
+      <p id="sum-note" class="hint" hidden></p>
+    </div>
+  </section>
+
+  <details class="faq">
+    <summary>常见问题</summary>
+    <dl>
+      <dt>支持哪些网站？</dt>
+      <dd>Nature、Springer（link.springer.com）、剑桥哲学会（cambridge.org，不弹窗口速度最快）、PNAS、Science、IEEE、Wiley、Company of Biologists
+        （JEB/Development 等五刊，全开放获取、无需校园网）、Royal Society（皇家学会
+        Phil. Trans./Proc. B/RSOS 等各刊）、Oxford 牛津大学出版社（NAR、JNCI、MNRAS、GJI 等
+        academic.oup.com 各刊）、ACS 美国化学会（JACS、ACS Omega 等 pubs.acs.org 各刊）、
+        APS 美国物理学会（PRL/PRX 等各刊）、美国生理学会（journals.physiology.org 各刊）、
+        MDPI（Applied Sciences/Remote Sensing/Sensors 等，全开放获取、无需校园网）、
+        SAGE（直接访问出版商官网）、芝加哥大学出版社（需代理，详见 README）、
+        Elsevier（ScienceDirect）、IOP Publishing（iopscience.iop.org，J. Phys. 系/Nuclear Fusion/JINST/ERL 等）会尝试从出版商官网取得正文 PDF。
+        具体文章能否下载取决于官网验证状态与机构权限；需要人工操作时可在同一下载器 Edge 中登录后重试。</dd>
+      <dt>需要校园网吗？</dt>
+      <dd>付费文章需要（能否下载取决于学校的机构订阅）；开放获取的文章（MDPI、Company of Biologists、Royal Society Open Science 等）任何网络都能下。
+        没有权限的文章会下载失败，不会把网页误存成 PDF。</dd>
+      <dt>为什么会弹出浏览器窗口？</dt>
+      <dd>部分网站需要真实浏览器。下载任务使用独立的 Edge 登录资料，不继承你日常浏览器的登录。
+        若批次显示“需人工”，点“在下载器 Edge 中登录或验证”；完成后回到本页点“验证完成后重试”。</dd>
+      <dt>可以关掉这个网页吗？</dt>
+      <dd>可以。下载在后台继续进行；重新打开 <span class="mono">http://127.0.0.1:7788</span>
+        就能继续看到进度。但黑窗口（服务程序）不要关，关了下载就停了。</dd>
+      <dt>下载的文件在哪？</dt>
+      <dd>保存在第二步填写的文件夹里，文件名就是 DOI；结束后点「打开 PDF 文件夹」直达。</dd>
+    </dl>
+  </details>
+</main>
+
+<footer>
+  需要校园网 / 机构订阅 · 仅供个人学习研究使用 · 命令行版见 README.md
+</footer>
+
+<div id="toast" class="toast" hidden></div>
+<script src="/app.js"></script>
+</body>
+</html>

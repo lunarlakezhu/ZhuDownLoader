@@ -2,7 +2,7 @@
 
 输入一份 DOI 清单，自动并行下载 PDF：实时看板显示每篇进度，结束时汇总失败清单，失败的还能一键导出重跑。支持 Nature、Springer、剑桥哲学会（cambridge.org）、PNAS、Science、IEEE、Wiley、Company of Biologists、Royal Society、Oxford 牛津大学出版社、ACS 美国化学会（含 JACS）、APS 美国物理学会（含 PRL）、美国生理学会、MDPI、SAGE、Elsevier（ScienceDirect）、IOP Publishing 等出版商官网。
 
-> 本仓库为**分发仓库**：只包含使用文档与 ZCode 验证框辅助插件。下载器可运行包（Windows / Mac 通用同一个包）在 [Releases](../../releases) 页面；源码与内部实现不在本仓库。
+> 本仓库包含**完整 CLI 源码**、使用文档与 ZCode 验证框辅助插件。普通用户建议直接在 [Releases](../../releases) 下载可运行包（Windows / Mac 通用同一个包，自带全部依赖，免配置）；想从源码运行见下文[从源码运行](#从源码运行)。
 
 > 前提提醒：下载 PDF 依赖校园网的机构订阅权限，请在学校网络环境内使用。合规边界见文末。
 
@@ -19,6 +19,16 @@
 1. 从 [Releases](../../releases) 下载**同一个** zip（文件名带 win 但 Mac 同样能用，内含全套 .command 脚本），解压到任意目录
 2. 按包内《Mac上手指南.txt》放行脚本（终端 `chmod +x` 一次）
 3. 双击 `一键安装环境.command`（一次性：装浏览器内核），再双击 `网页版下载.command`，浏览器自动打开 `http://127.0.0.1:7788`
+
+## 从源码运行（开发者）
+
+```bash
+git clone https://github.com/lunarlakezhu/ZhuDownLoader.git
+cd ZhuDownLoader
+npm install                      # 安装依赖（playwright）
+npx playwright install chromium  # 首次：下载浏览器内核（约 150MB）
+node batch_download.mjs 清单.txt D:\Papers   # 批量下载；起网页版则是 node webui/server.mjs
+```
 
 命令行用法、清单格式与全部参数见 [wiki](wiki/Home.md)。
 
